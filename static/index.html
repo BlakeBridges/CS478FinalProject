@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="/static/cis444.js"></script>
+<link rel= "stylesheet" type= "text/css" href= "style.css">
+</head>
+<body>
+    <div id="login">
+        <form>
+            <label for="loginUsername">Username:</label><br>
+            <input type="text" id="loginUsername" name="loginUsername" value="John"><br>
+            <label for="loginPassword">Password:</label><br>
+            <input type="password" id="loginPassword" name="loginPassword" value="12212"><br><br>
+            <input type="submit" value="Login" onclick="return send_login();">
+        </form>
+    </div>
+
+    <div id ='fileDiv' display: hidden>
+    <form id='file-catcher'>
+        <input id='file-input' type='file' multiple />
+        <button type='submit'>
+            Submit
+        </button>
+
+    </form>
+   
+
+    <div id='file-list-display'></div>
+    </div>
+    <div id="loading" display: hidden ><img src="/static/images/loading.gif"/></div>
+
+
+
+    <script>
+
+            (function () {
+            var fileCatcher = document.getElementById('file-catcher');
+            var fileInput = document.getElementById('file-input');
+            var fileListDisplay = document.getElementById('file-list-display');
+            var fileList = [];
+            var renderFileList, sendFile;
+		fileSuccessfullyUploaded = 0;
+            fileCatcher.addEventListener('submit', function (evnt) {
+                evnt.preventDefault();
+		    numberOfFiles = fileList.length;
+		    uploading();
+                fileList.forEach(function (file) {
+                    sendFile(file);
+                });
+            });
+
+            fileInput.addEventListener('change', function (evnt) {
+                fileList = [];
+                for (var i = 0; i < fileInput.files.length; i++) {
+                    fileList.push(fileInput.files[i]);
+                }
+                renderFileList();
+            });
+
+            renderFileList = function () {
+                fileListDisplay.innerHTML = '';
+                fileList.forEach(function (file, index) {
+                    var fileDisplayEl = document.createElement('p');
+                    fileDisplayEl.innerHTML = (index + 1) + ': ' + file.name;
+                    fileListDisplay.appendChild(fileDisplayEl);
+			
+                });
+                };
+		
+                sendFile = function (file) {
+                    var formData = new FormData();
+                    formData.set('file', file);
+
+                    secure_file_upload("/secure_api/uploadFile",
+                        formData,
+                        function (data) {
+                            console.log(data);
+           			fileSuccessfullyUploaded++;
+				if(fileSuccessfullyUploaded == numberOfFiles){
+					doneUploading();
+				}
+                        },
+                        function (err) { console.log(err)
+			alert("Could not save images, try again.")
+			})
+                };
+            })();
+
+            function send_login() {
+                $.post("/open_api/login", {
+                    "username": $('#loginUsername').val(),
+                    "password": $('#loginPassword').val()
+                },
+                    function (data, textStatus) {
+                        //this gets called when browser receives response from server
+                        console.log(data.token);
+                        //Set global JWT
+                        jwt = data.token;
+                        //make secure call with the jwt
+                        showUpload();
+                    }, "json").fail(function (response) {
+                        //this gets called if the server throws an error
+			alert("Log in failed, please try again");
+                        console.log("error");
+                        console.log(response);
+                    });
+                return false;
+            }
+		
+		function uploading()
+		{
+		$('#loading').show();
+		}
+
+		function doneUploading()
+		{
+		$('#loading').hide();
+		}
+		
+            function showUpload() {
+                $('#login').hide();
+                $('#fileDiv').show();
+		    document.body.style.backgroundImage = "url('./images/background.jpg')";
+
+            }
+
+    </script>
+</body>
+</html>
+
+
