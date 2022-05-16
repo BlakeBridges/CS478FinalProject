@@ -41,7 +41,7 @@ function secure_post_with_token(endpoint, data_to_send, on_success_callback, on_
         });
 }
 
-function secure_file_upload(endpoint, data_to_send, on_success_callback, on_fail_callback)
+function file_upload(endpoint, data_to_send, on_success_callback, on_fail_callback)
 {
 	xhr = new XMLHttpRequest();
 
