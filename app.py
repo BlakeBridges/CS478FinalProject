@@ -25,7 +25,6 @@ def index():
 
 
 @app.route("/secure_api/<proc_name>",methods=['GET', 'POST'])
-@token_required
 def exec_secure_proc(proc_name):
     logger.debug(f"Secure Call to {proc_name}")
 

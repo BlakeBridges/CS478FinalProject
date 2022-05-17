@@ -9,7 +9,7 @@ border: dashed black;
   text-align: center;
   position:absolute;
   height: 300px;
-  width 200px;
+  width: 200px;
   top:50%;
   left:45%;
   margin-top:-50px; /* this is half the height of your div*/
@@ -32,6 +32,13 @@ border: dashed black;
   left:50%;
   margin-top:-50px; /* this is half the height of your div*/
   margin-left:-100px; /*this is half of width of your div*/
+}
+
+#realtime-video
+{
+  position:absolute;
+  top:20%;
+  left:41%;  
 }
 
 
