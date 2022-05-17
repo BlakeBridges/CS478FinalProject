@@ -2,6 +2,10 @@ body {
   background-image: url("./images/base.jpg");
 }
 
+.centerWithin {
+  text-align: center;
+}
+
 #fileDiv
 {
 border: dashed black;
@@ -25,29 +29,11 @@ border: dashed black;
   transform: translate(-50%, -50%);
 }
 
-#login
-{
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-top:-50px; /* this is half the height of your div*/
-  margin-left:-100px; /*this is half of width of your div*/
-}
-
-#realtime-video
-{
-  position:absolute;
-  top:20%;
-  left:41%;  
-}
-
-
 #loading img {
   position: absolute;
   margin: 0;
-  position: absolute;
   top: 50%;
-  left: 45%;
+  left: 42%;
  width: 192px;
  height: 108px;
 }
@@ -56,5 +42,3 @@ label{
 color: white;
 
 }
-
-

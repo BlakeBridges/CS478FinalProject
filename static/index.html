@@ -8,17 +8,23 @@
 <link rel= "stylesheet" type= "text/css" href= "style.css">
 </head>
 <body>
-    <div id="realtime-video" display: hidden>
-        <button id="start-camera" onclick="start_camera()">Start Camera</button><br>
-        <video id="video" width="320" height="240" autoplay></video><br>
-        <button id="click-photo">Take Photo and Verify</button><br>
-        <canvas id="canvas" width="320" height="240"></canvas><br>
-        <label id="prediction" style="font-size: 35px;" display: hidden>Prediction: </label>
+
+    <div class="center" id="realtime-video" display: hidden>
+        <div class="centerWithin">
+            <button id="start-camera" onclick="start_camera()">Start Camera</button><br>
+            <video id="video" width="320" height="240" autoplay></video><br>
+            <button id="click-photo">Take Photo and Verify</button><br>
+            <canvas id="canvas" width="320" height="240"></canvas><br>
+            <label id="prediction" style="font-size: 35px; text-align:center;" display: hidden></label>
+        </div>
+        
     </div>
-    <div id="login">
-        <label for="loginUsername">Username:</label><br>
-        <input type="text" id="loginUsername" name="loginUsername" value="John"><br>
-        <input type="submit" value="Login" onclick="showCamera()">
+    <div id="login" class="center">
+        <div class="centerWithin">
+            <b><label for="loginUsername">Username</label></b><br>
+            <input type="text" id="loginUsername" name="loginUsername" value="John"><br>
+            <input type="submit" value="Login" onclick="showCamera()">
+        </div>
     </div>
 
     <div id ='fileDiv' display: hidden>
@@ -57,21 +63,23 @@
             }
 
             function send_image(image_data_url) {
+                var prediction = document.getElementById("prediction");
                 file_upload("/open_calls/open_upload", 
                     {
                     "username": $('#loginUsername').val(),
                     "file": image_data_url
                 },
-                 
                  function (data) {
-                    console.log(data);
-                    fileSuccessfullyUploaded++;
-                    if(fileSuccessfullyUploaded == numberOfFiles){
-                        doneUploading();
+                    if (data.message == "False") {
+                        prediction.innerHTML = "I do not recognize you, " + $('#loginUsername').val() + ".";
+                    } else {
+                        prediction.innerHTML = "Hello, " + $('#loginUsername').val() + ".";
                     }
-                }, function (err) { console.log(err)
-                    alert("Could not save image, try again.")
                     doneUploading();
+                }, function (err) { console.log(err)
+                    alert("Image could not be uploaded, or you are missing your user model.")
+                    doneUploading();
+                    prediction.innerHTML = "You do not have a valid model, " + $('#loginUsername').val() + ".";
                 })
             }
 		
@@ -93,7 +101,6 @@
             $('#login').hide();
             $('#realtime-video').show();
             document.body.style.backgroundImage = "url('./images/background.jpg')";
-            console.log("EndofShowCamera");
         }
     </script>
 </body>
