@@ -8,14 +8,17 @@
 <link rel= "stylesheet" type= "text/css" href= "style.css">
 </head>
 <body>
+    <div id="realtime-video" display: hidden>
+        <button id="start-camera" onclick="start_camera()">Start Camera</button><br>
+        <video id="video" width="320" height="240" autoplay></video><br>
+        <button id="click-photo">Take Photo and Verify</button><br>
+        <canvas id="canvas" width="320" height="240"></canvas><br>
+        <label id="prediction" style="font-size: 35px;" display: hidden>Prediction: </label>
+    </div>
     <div id="login">
-        <form>
-            <label for="loginUsername">Username:</label><br>
-            <input type="text" id="loginUsername" name="loginUsername" value="John"><br>
-            <label for="loginPassword">Password:</label><br>
-            <input type="password" id="loginPassword" name="loginPassword" value="12212"><br><br>
-            <input type="submit" value="Login" onclick="return send_login();">
-        </form>
+        <label for="loginUsername">Username:</label><br>
+        <input type="text" id="loginUsername" name="loginUsername" value="John"><br>
+        <input type="submit" value="Login" onclick="showCamera()">
     </div>
 
     <div id ='fileDiv' display: hidden>
@@ -26,107 +29,72 @@
         </button>
 
     </form>
-   
-
     <div id='file-list-display'></div>
     </div>
     <div id="loading" display: hidden ><img src="/static/images/loading.gif"/></div>
-
+    
 
 
     <script>
+            function start_camera() {
+                let camera_button = document.querySelector("#start-camera");
+                let video = document.querySelector("#video");
+                let click_button = document.querySelector("#click-photo");
+                let canvas = document.querySelector("#canvas");
 
-            (function () {
-            var fileCatcher = document.getElementById('file-catcher');
-            var fileInput = document.getElementById('file-input');
-            var fileListDisplay = document.getElementById('file-list-display');
-            var fileList = [];
-            var renderFileList, sendFile;
-		fileSuccessfullyUploaded = 0;
-            fileCatcher.addEventListener('submit', function (evnt) {
-                evnt.preventDefault();
-		    numberOfFiles = fileList.length;
-		    uploading();
-                fileList.forEach(function (file) {
-                    sendFile(file);
+                camera_button.addEventListener('click', async function() {
+                    let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    video.srcObject = stream;
                 });
-            });
 
-            fileInput.addEventListener('change', function (evnt) {
-                fileList = [];
-                for (var i = 0; i < fileInput.files.length; i++) {
-                    fileList.push(fileInput.files[i]);
-                }
-                renderFileList();
-            });
-
-            renderFileList = function () {
-                fileListDisplay.innerHTML = '';
-                fileList.forEach(function (file, index) {
-                    var fileDisplayEl = document.createElement('p');
-                    fileDisplayEl.innerHTML = (index + 1) + ': ' + file.name;
-                    fileListDisplay.appendChild(fileDisplayEl);
-			
+                click_button.addEventListener('click', function() {
+                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                    let image_data_url = canvas.toDataURL('image/jpeg');
+                    uploading();
+                    showResult();
+                    send_image(image_data_url);
                 });
-                };
-		
-                sendFile = function (file) {
-                    var formData = new FormData();
-                    formData.set('file', file);
+            }
 
-                    secure_file_upload("/secure_api/uploadFile",
-                        formData,
-                        function (data) {
-                            console.log(data);
-           			fileSuccessfullyUploaded++;
-				if(fileSuccessfullyUploaded == numberOfFiles){
-					doneUploading();
-				}
-                        },
-                        function (err) { console.log(err)
-			alert("Could not save images, try again.")
-			})
-                };
-            })();
-
-            function send_login() {
-                $.post("/open_api/login", {
+            function send_image(image_data_url) {
+                file_upload("/open_calls/open_upload", 
+                    {
                     "username": $('#loginUsername').val(),
-                    "password": $('#loginPassword').val()
+                    "file": image_data_url
                 },
-                    function (data, textStatus) {
-                        //this gets called when browser receives response from server
-                        console.log(data.token);
-                        //Set global JWT
-                        jwt = data.token;
-                        //make secure call with the jwt
-                        showUpload();
-                    }, "json").fail(function (response) {
-                        //this gets called if the server throws an error
-			alert("Log in failed, please try again");
-                        console.log("error");
-                        console.log(response);
-                    });
-                return false;
+                 
+                 function (data) {
+                    console.log(data);
+                    fileSuccessfullyUploaded++;
+                    if(fileSuccessfullyUploaded == numberOfFiles){
+                        doneUploading();
+                    }
+                }, function (err) { console.log(err)
+                    alert("Could not save image, try again.")
+                    doneUploading();
+                })
             }
 		
 		function uploading()
 		{
-		$('#loading').show();
+		    $('#loading').show();
 		}
 
 		function doneUploading()
 		{
-		$('#loading').hide();
+		    $('#loading').hide();
 		}
-		
-            function showUpload() {
-                $('#login').hide();
-                $('#fileDiv').show();
-		    document.body.style.backgroundImage = "url('./images/background.jpg')";
 
-            }
+        function showResult() {
+            $('#prediction').show(); // Need to show the prediction value returned from backend somehow
+        }
 
+        function showCamera() {
+            $('#login').hide();
+            $('#realtime-video').show();
+            document.body.style.backgroundImage = "url('./images/background.jpg')";
+            console.log("EndofShowCamera");
+        }
     </script>
 </body>
 </html>
