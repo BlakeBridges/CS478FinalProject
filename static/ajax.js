@@ -43,13 +43,13 @@ function secure_post_with_token(endpoint, data_to_send, on_success_callback, on_
 
 function file_upload(endpoint, data_to_send, on_success_callback, on_fail_callback)
 {
+    console.log(data_to_send)
 	xhr = new XMLHttpRequest();
-
 	$.ajax({
 		//actual post
-       		 url: endpoint,
+       		url: endpoint,
         	type: "POST",
-		xhr: function () {
+            xhr: function () {
  	       		var myXhr = $.ajaxSettings.xhr();
         		if (myXhr.upload) {
 				myXhr.upload.addEventListener('progress', function(event){
@@ -66,15 +66,14 @@ function file_upload(endpoint, data_to_send, on_success_callback, on_fail_callba
             			}, false);
             		}
             	return myXhr;
-        	},   
-        	contentType:false,
-        	processData: false,
-        	cache: false,
+        	},
+        contentType: 'application/json',            
+        dataType : 'json',
 		timeout: 60000,
-        	data: data_to_send,
-        	success: on_success_callback,
+        data: JSON.stringify(data_to_send),
+        success: on_success_callback,
 		error: on_fail_callback,
-        	beforeSend: setHeader 
+        	
 
  });
 }
