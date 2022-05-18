@@ -31,9 +31,10 @@ border: dashed black;
 
 #loading img {
   position: absolute;
-  margin: 0;
-  top: 50%;
-  left: 42%;
+  margin-top: 0px;
+  margin-left: 10px;
+  top: 0%;
+  left: 0%;
  width: 192px;
  height: 108px;
 }

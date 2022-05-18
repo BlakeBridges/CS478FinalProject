@@ -12,9 +12,9 @@
     <div class="center" id="realtime-video" display: hidden>
         <div class="centerWithin">
             <button id="start-camera" onclick="start_camera()">Start Camera</button><br>
-            <video id="video" width="320" height="240" autoplay></video><br>
+            <video id="video" width="640" height="480" autoplay></video><br>
             <button id="click-photo">Take Photo and Verify</button><br>
-            <canvas id="canvas" width="320" height="240"></canvas><br>
+            <canvas id="canvas" width="250" height="250"></canvas><br>
             <label id="prediction" style="font-size: 35px; text-align:center;" display: hidden></label>
         </div>
         
@@ -54,7 +54,7 @@
                 });
 
                 click_button.addEventListener('click', function() {
-                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                    canvas.getContext('2d').drawImage(video, 200, 125, 250, 250, 0, 0, 250, 250);
                     let image_data_url = canvas.toDataURL('image/jpeg');
                     uploading();
                     showResult();
